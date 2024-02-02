@@ -23,3 +23,6 @@ config : {
 example in app.js and test.js
 
 https://habr.com/ru/companies/ruvds/articles/321104/
+
+TODO: mongo configuration
+https://dev.to/mikelogaciuk/docker-initialize-custom-users-and-databases-in-mongodb-3dkb

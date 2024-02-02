@@ -16,11 +16,11 @@ services:
   #     - node-network
 
   mongodb:
-    image: mongo:4.4.6
+    image: mongo:6-jammy
     environment:
-      MONGO_INITDB_DATABASE: testdb
-      MONGO_INITDB_ROOT_USERNAME: testusername
-      MONGO_INITDB_ROOT_PASSWORD: testpassword
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT:-mongodb}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-mongodb}
+      MONGO_INITDB_ROOT_DATABASE: ${MONGO_ROOT_DB:-mongodb}
     ports:
       - '27017:27017'
     volumes:
