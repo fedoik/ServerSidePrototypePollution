@@ -17,6 +17,10 @@ services:
 
   mongodb:
     image: mongo:4.4.6
+    environment:
+      MONGO_INITDB_DATABASE: testdb
+      MONGO_INITDB_ROOT_USERNAME: testusername
+      MONGO_INITDB_ROOT_PASSWORD: testpassword
     ports:
       - '27017:27017'
     volumes:

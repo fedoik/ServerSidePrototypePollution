@@ -2,11 +2,12 @@ const express        = require('express');
 const MongoClient    = require('mongodb').MongoClient;
 const bodyParser     = require('body-parser');
 const app            = express();
+const db             = require('./config/database');
 const port = 8080;
 app.use(express.json());
 // require('./app/routes')(app, {});
 
-MongoClient.connect("mongodb://127.0.0.1:27017/SSPPtask", (err, database) => {
+MongoClient.connect(db.url, (err, database) => {
     if (err) return console.log(err)
     require('./app/routes')(app, database);
     app.listen(port, () => {
