@@ -6,7 +6,7 @@ const port = 8080;
 app.use(express.json());
 // require('./app/routes')(app, {});
 
-MongoClient.connect("url here!!!!!!", (err, database) => {
+MongoClient.connect("mongodb://127.0.0.1:27017/SSPPtask", (err, database) => {
     if (err) return console.log(err)
     require('./app/routes')(app, database);
     app.listen(port, () => {
@@ -14,3 +14,6 @@ MongoClient.connect("url here!!!!!!", (err, database) => {
     });               
   })
   
+// app.listen(port, () => {
+//   console.log("start")
+// });
