@@ -1,15 +1,18 @@
-// const {
-//     DB_USER,
-//     DB_PASSWORD,
-//     DB_HOST,
-//     DB_NAME,
-//   } = process.env;
+const db = require('better-sqlite3')('db.sqlite3');
+// const Database = require('better-sqlite3');
+// const db = new Database('database.db', { verbose: console.log });
+db.exec(`DROP TABLE IF EXISTS notes;`);
+db.exec(`DROP TABLE IF EXISTS note_config;`);
+db.exec(`CREATE TABLE notes(
+        id INTEGER PRIMARY KEY,
+        note TEXT
+    );
+    CREATE TABLE note_config(
+        id INTEGER PRIMARY KEY,
+        isAdmin INTEGER DEFAULT 0,
+        note_id INTEGER
+    );`);
 
-const DB_USER = "testuser";
-const DB_PASSWORD = "testpassword";
-const DB_NAME = "testdb";
-const DB_HOST = "testdb";
-
-module.exports = {
-    url: `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:27017/${DB_NAME}`
+module.exports = { 
+    db: db   
 }
