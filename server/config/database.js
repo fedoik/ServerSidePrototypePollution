@@ -5,12 +5,13 @@ db.exec(`DROP TABLE IF EXISTS notes;`);
 db.exec(`DROP TABLE IF EXISTS note_config;`);
 db.exec(`CREATE TABLE notes(
         id INTEGER PRIMARY KEY,
+        uuid TEXT,
         note TEXT
     );
     CREATE TABLE note_config(
         id INTEGER PRIMARY KEY,
         isAdmin INTEGER DEFAULT 0,
-        note_id INTEGER
+        note_uuid INTEGER
     );`);
 
 module.exports = { 
