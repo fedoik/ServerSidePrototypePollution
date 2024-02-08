@@ -1,15 +1,17 @@
 const express        = require('express');
-// const MongoClient    = require('mongodb').MongoClient;
-const crypto = require('crypto');
+const crypto         = require('crypto');
 const bodyParser     = require('body-parser');
-require('./config/database');
+const cookieParser   = require('cookie-parser')
 const app            = express();
+require('./config/database');
+
 const port = 8080;
 app.use(express.json());
+app.use(cookieParser());
 
 const db = require('better-sqlite3')('db.sqlite3');
 
-require('./app/routes')(app,db);
+require('./app/routes')(app,db,crypto);
 
 
 app.listen(port, () => {

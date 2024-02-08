@@ -1,33 +1,45 @@
-module.exports = function(app, db) {
+module.exports = function(app, db,crypto) {
+    app.get('/', (req,res) => {
+
+      /*Set session for all users*/ 
+      
+      let options = {
+        maxAge: 1000*60*720,
+        httpOnly: true,
+      }
+      res.cookie('session', crypto.randomBytes(32).toString('base64'), options)
+      res.send({"Status":"Cookies was set"})
+    });
+
     app.post('/note/create', (req, res) => {
+
+      /*Create note*/
+
       const note = { title: req.body.title, body: req.body.body };
+      const session = req.cookies.session
       const uuid = crypto.randomUUID()
-      const stmt = db.prepare("INSERT INTO notes (note, uuid) VALUES (?, ?)");
+      const config = {"isAdmin":0}
+      const stmt = db.prepare("INSERT INTO notes (note, uuid, createBy, config) VALUES (?, ?, ?, ?)");
       try {
-        const info = stmt.run(JSON.stringify(note), uuid);
-        db.prepare("INSERT INTO note_config (note_uuid) VALUES (?)").run(uuid)
+        const info = stmt.run(JSON.stringify(note), uuid, session, JSON.stringify(config));
         res.send(db.prepare("SELECT uuid FROM notes WHERE id = ?").get(info.lastInsertRowid));
       } catch (e) {
+        console.log(e)
         res.send({"Error": "sqlite error"});
       }
     });
 
     app.get('/note/:uuid', (req, res) => {
+
+      /* Get note by uuid */
+
       const {uuid} = req.params
-
-      // const note = {}
-      // const config = {}
-
       try {
         const Note = db.prepare("SELECT * FROM notes WHERE uuid = ?").get(uuid);
-        // const Config = db.prepare("SELECT * FROM note_config WHERE uuid = ?").get(uuid)
-
-        // note = JSON.parse(Note.note);
-        // if (Config[isAdmin] != 0) {
-        //   config["isAdmin"] = true;
-        // }
-
-        res.send({"id":Note.id, "note":JSON.parse(Note.note)})
+        if (req.cookies.session === note.createBy) {
+          res.send({"id":Note.id, "note":JSON.parse(Note.note)})
+        }
+        res.send({"Error":"You dont have permissions for this action"});
       } catch(e) {
         console.log(e)
         res.send({"Error": "sqlite error"});
@@ -35,19 +47,26 @@ module.exports = function(app, db) {
     });
 
     app.get('/note/:uuid/update', (req, res) => {
+
+      /* Update note by uuid */
+
       const {uuid} = req.params
       const {prop, value} = req.query // title or body potential
 
-      config = {}
-      notes = {}
+      const config = {}
+      const notes = {}
 
       const stmt = db.prepare("SELECT * FROM notes")
       for (const noteObj of stmt.iterate()) {
-        //notes[noteObj.uuid] = notes[noteObj.uuid] || {};
-        notes[noteObj.uuid] = JSON.parse(noteObj.note);
+        notes[noteObj.uuid] = {...JSON.parse(noteObj.note), ...{"createBy":noteObj.createBy}};
       }
-       
-      const Config = db.prepare("SELECT * FROM note_config WHERE note_uuid = ?").get(uuid) ?? {"isAdmin": 0};
+
+      //подумать над этим
+      // if (notes[uuid]["createBy"] != req.cookies.session) {
+      //   res.send({"Error":"You dont have permissions for this action"})
+      // }
+      
+      const Config = JSON.parse(db.prepare("SELECT config FROM notes WHERE uuid = ?").get(uuid).config) ?? {"isAdmin": 0};
 
       if (Config["isAdmin"] != 0) {
         config["isAdmin"] = true;
