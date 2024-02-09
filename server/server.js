@@ -2,12 +2,14 @@ const express        = require('express');
 const crypto         = require('crypto');
 const bodyParser     = require('body-parser');
 const cookieParser   = require('cookie-parser')
+const cors           = require('cors');
 const app            = express();
 require('./config/database');
 
 const port = 8080;
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());// разрешить все (плохо)
 
 const db = require('better-sqlite3')('db.sqlite3');
 

@@ -1,5 +1,5 @@
 module.exports = function(app, db,crypto) {
-    app.get('/', (req,res) => {
+    app.get('/api/', (req,res) => {
 
       /*Set session for all users*/ 
       
@@ -11,7 +11,7 @@ module.exports = function(app, db,crypto) {
       res.send({"Status":"Cookies was set"})
     });
 
-    app.post('/note/create', (req, res) => {
+    app.post('/api/note/create', (req, res) => {
 
       /*Create note*/
 
@@ -29,13 +29,33 @@ module.exports = function(app, db,crypto) {
       }
     });
 
-    app.get('/note/:uuid', (req, res) => {
+    app.get('/api/notes', (req,res)=>{
+
+      /* Get all notes by user*/
+      
+      if (req.cookies.session === undefined) {
+        res.send({"error":"Not auth"})
+      }
+      try{
+        // Notes = []
+        const Notes = db.prepare("SELECT * FROM notes WHERE createBy = ?").all(req.cookies.session);
+        // for (const note of stmt.iterate()) {
+        //   Notes.push(JSON.parse(note));
+        // }
+        res.send({...Notes,...{"error":null}})
+      } catch(e) {
+        res.send({"error":"sql error"})
+      }
+
+    });
+
+    app.get('/api/note/:uuid', (req, res) => {
 
       /* Get note by uuid */
 
       const {uuid} = req.params
       try {
-        const Note = db.prepare("SELECT * FROM notes WHERE uuid = ?").get(uuid);
+        const Note = db.prepare("SELECT * FROM notes WHERE uuid = ?").all(uuid);
         if (req.cookies.session === note.createBy) {
           res.send({"id":Note.id, "note":JSON.parse(Note.note)})
         }
@@ -46,7 +66,7 @@ module.exports = function(app, db,crypto) {
       }
     });
 
-    app.get('/note/:uuid/update', (req, res) => {
+    app.get('/api/note/:uuid/update', (req, res) => {
 
       /* Update note by uuid */
 

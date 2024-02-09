@@ -1,36 +1,36 @@
-version: '3.8'
+# version: '3.8'
 
-services:
-  # node-app:
-  #   build: .
-  #   image: node-app
-  #   environment:
-  #     - MONGODB_URL=mongodb://mongodb:27017/node-boilerplate
-  #   ports:
-  #     - '8085:8085'
-  #   depends_on:
-  #     - mongodb
-  #   volumes:
-  #     - .:/src
-  #   networks:
-  #     - node-network
+# services:
+#   # node-app:
+#   #   build: .
+#   #   image: node-app
+#   #   environment:
+#   #     - MONGODB_URL=mongodb://mongodb:27017/node-boilerplate
+#   #   ports:
+#   #     - '8085:8085'
+#   #   depends_on:
+#   #     - mongodb
+#   #   volumes:
+#   #     - .:/src
+#   #   networks:
+#   #     - node-network
 
-  mongodb:
-    image: mongo:6-jammy
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT:-mongodb}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-mongodb}
-      MONGO_INITDB_ROOT_DATABASE: ${MONGO_ROOT_DB:-mongodb}
-    ports:
-      - '27017:27017'
-    volumes:
-      - dbdata6:/data/db
-    networks:
-      - node-network
+#   mongodb:
+#     image: mongo:6-jammy
+#     environment:
+#       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT:-mongodb}
+#       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-mongodb}
+#       MONGO_INITDB_ROOT_DATABASE: ${MONGO_ROOT_DB:-mongodb}
+#     ports:
+#       - '27017:27017'
+#     volumes:
+#       - dbdata6:/data/db
+#     networks:
+#       - node-network
 
-volumes:
-  dbdata6:
+# volumes:
+#   dbdata6:
 
-networks:
-  node-network:
-    driver: bridge
+# networks:
+#   node-network:
+#     driver: bridge
