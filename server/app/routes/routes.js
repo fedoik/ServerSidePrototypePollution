@@ -33,18 +33,14 @@ module.exports = function(app, db,crypto) {
 
       /* Get all notes by user*/
       
-      if (req.cookies.session === undefined) {
-        res.send({"error":"Not auth"})
-      }
+      // if (req.cookies.session === undefined) {
+      //   res.send({"error":"Not auth"})
+      // }
       try{
-        // Notes = []
-        const Notes = db.prepare("SELECT * FROM notes WHERE createBy = ?").all(req.cookies.session);
-        // for (const note of stmt.iterate()) {
-        //   Notes.push(JSON.parse(note));
-        // }
-        res.send({...Notes,...{"error":null}})
+        const Notes = db.prepare("SELECT * FROM notes WHERE createBy = ?").all("s")//.all(req.cookies.session);
+        res.send({...{"notes":Notes},...{"error":"null"}})
       } catch(e) {
-        res.send({"error":"sql error"})
+        res.send({...{"notes":[]},...{"error":"sql error"}})
       }
 
     });

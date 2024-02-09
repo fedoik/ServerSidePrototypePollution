@@ -30,6 +30,7 @@ export default {
     },
     data() {
         return {
+            state: "",
             items: [
                 {   
                     label: 'Главная', 
@@ -48,7 +49,6 @@ export default {
             ]
         }
     }
-        
 }
 </script>
 
