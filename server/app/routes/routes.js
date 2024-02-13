@@ -1,14 +1,15 @@
 module.exports = function(app, db,crypto) {
-    app.get('/api/', (req,res) => {
+    app.get('/api/session', (req,res) => {
 
       /*Set session for all users*/ 
       
       let options = {
-        maxAge: 1000*60*720,
-        httpOnly: true,
+        maxAge: 1000*60*720
       }
-      res.cookie('session', crypto.randomBytes(32).toString('base64'), options)
-      res.send({"Status":"Cookies was set"})
+      const Cookie = crypto.randomBytes(32).toString('base64')
+      res.cookie('session', Cookie, options)
+      res.send({"session":Cookie})
+      // res.send({"test":"tetst"})
     });
 
     app.post('/api/note/create', (req, res) => {
@@ -16,28 +17,32 @@ module.exports = function(app, db,crypto) {
       /*Create note*/
 
       const note = { title: req.body.title, body: req.body.body };
-      const session = req.cookies.session
+      const session = req.header('Authorization');
+      if (session === undefined) {
+        res.send({"error": "Not auth"})
+      }
       const uuid = crypto.randomUUID()
       const config = {"isAdmin":0}
       const stmt = db.prepare("INSERT INTO notes (note, uuid, createBy, config) VALUES (?, ?, ?, ?)");
       try {
         const info = stmt.run(JSON.stringify(note), uuid, session, JSON.stringify(config));
-        res.send(db.prepare("SELECT uuid FROM notes WHERE id = ?").get(info.lastInsertRowid));
+        //res.send(db.prepare("SELECT uuid FROM notes WHERE id = ?").get(info.lastInsertRowid));
+        res.send({...{"error":null},...{"uuid": uuid}})
       } catch (e) {
         console.log(e)
-        res.send({"Error": "sqlite error"});
+        res.send({"error": "sqlite error"});
       }
     });
 
     app.get('/api/notes', (req,res)=>{
 
       /* Get all notes by user*/
-      
-      // if (req.cookies.session === undefined) {
-      //   res.send({"error":"Not auth"})
-      // }
+
+      if (req.header('Authorization') === undefined) {
+        res.send({"error":"Not auth"})
+      }
       try{
-        const Notes = db.prepare("SELECT * FROM notes WHERE createBy = ?").all("s")//.all(req.cookies.session);
+        const Notes = db.prepare("SELECT * FROM notes WHERE createBy = ?").all(req.header('Authorization'))
         res.send({...{"notes":Notes},...{"error":"null"}})
       } catch(e) {
         res.send({...{"notes":[]},...{"error":"sql error"}})
@@ -51,14 +56,14 @@ module.exports = function(app, db,crypto) {
 
       const {uuid} = req.params
       try {
-        const Note = db.prepare("SELECT * FROM notes WHERE uuid = ?").all(uuid);
-        if (req.cookies.session === note.createBy) {
-          res.send({"id":Note.id, "note":JSON.parse(Note.note)})
+        const Note = db.prepare("SELECT * FROM notes WHERE uuid = ?").get(uuid);
+        if (req.header('Authorization') === Note.createBy) {
+          res.send({"id":Note.id, "note":JSON.parse(Note.note),"error":null})
         }
-        res.send({"Error":"You dont have permissions for this action"});
+        res.send({"error":"You dont have permissions for this action"});
       } catch(e) {
         console.log(e)
-        res.send({"Error": "sqlite error"});
+        res.send({"error": "sqlite error1"});
       }
     });
 

@@ -7,6 +7,7 @@
         <div class="success" v-else-if="error === 'null'">
             
             <Notes :items="notes"/>
+            <!-- @data-updated="newNotes" -->
             <!-- <p v-if="notes.length > 0">Список элементов:</p>
             <ul v-if="notes.length > 0">
             <li v-for="item in notes" :key="item.TestObject">{{ item.TestObject }}</li>
@@ -30,9 +31,8 @@
 <script>
 import ProgressSpinner from 'primevue/progressspinner';
 import Notes from './Notes.vue'
+import axios from 'axios';
 // import Toast from 'primevue/toast';
-import axios from "axios";
-
 
 export default {
     name: "NotesPage",
@@ -49,12 +49,42 @@ export default {
         }
     },
     methods: {
+        async getCookies() {
+            try {
+                if (document.cookie.indexOf("session") != 0) {
+                    const data = await axios.get("http://127.0.0.1:50000/api/session").then((response) => {return(response.data);});
+                    let options = {
+                    maxAge: 1000*60*720,
+                    };
+
+                    document.cookie = `session=${data.session}; Max-Age=${options.maxAge};`;
+                }
+            }catch(e) {
+                console.log(e)
+                this.error = "Backend не отвечает"
+            }
+        },
         async getNotes() {
         try {
-            const { data } = await axios.get("http://127.0.0.1:8080/api/notes");
+            const { data } = await axios.get("http://127.0.0.1:50000/api/notes", {
+                headers: {
+                    'Authorization': document.cookie.split("session")[1].slice(1)
+                }
+            });
             this.error = data.error;
-            this.notes = data.notes;
+            if (data.notes.length === 0) {
+                this.notes = []
+            } else {
+                data.notes.forEach(note => {
+                    let tempNote = {};
+                    let d = JSON.parse(note.note)
+                    tempNote = {...{"id": note.id}, ...{"title": d.title,  "body":d.body}}
+                    this.notes.push(tempNote)
+                });
+            }
+            //this.notes = data.notes;
         } catch(e) {
+            console.log(e)
             this.error = "Backend не отвечает"
         }
         },
@@ -63,10 +93,14 @@ export default {
                 this.$toast.add({ severity: 'error', summary: 'Упс! Ошибка!', detail: this.error, life: 2000 });
                 this.count+=1;
             }
-        }
+        },
+        // newNotes() {
+        //     this.getNotes();
+        // }
         
     },
     beforeMount() {
+        this.getCookies();
         this.getNotes();
     }
 
