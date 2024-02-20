@@ -71,6 +71,16 @@ module.exports = function(app, db,crypto) {
 
       /* Update note by uuid */
 
+
+      /*
+      By Developer: Anton Kirrilov
+      Comment: I think this implementation of the update function is the most optimal 
+
+      request example: 
+            http://127.0.0.1:50000/api/note/67bdaf3f-aa8e-4d29-ba7e-e3d74689aae4/update?prop=title&value=helloworld
+      */
+
+
       const {uuid} = req.params
       const {prop, value} = req.query // title or body potential
 
@@ -81,14 +91,9 @@ module.exports = function(app, db,crypto) {
       for (const noteObj of stmt.iterate()) {
         notes[noteObj.uuid] = {...JSON.parse(noteObj.note), ...{"createBy":noteObj.createBy}};
       }
-
-      //подумать над этим
-      // if (notes[uuid]["createBy"] != req.cookies.session) {
-      //   res.send({"Error":"You dont have permissions for this action"})
-      // }
       
-      const Config = JSON.parse(db.prepare("SELECT config FROM notes WHERE uuid = ?").get(uuid).config) ?? {"isAdmin": 0};
-
+      const Config = JSON.parse(((db.prepare("SELECT config FROM notes WHERE uuid = ?").get(uuid)) ?? {config:'{"isAdmin": 0}'}).config);
+      console.log(Config)
       if (Config["isAdmin"] != 0) {
         config["isAdmin"] = true;
       }
@@ -101,8 +106,6 @@ module.exports = function(app, db,crypto) {
         updateNote(uuid, prop, value)
       }
 
-      // res.send(notes)
-
       if (!config.isAdmin){
         res.send({
           "Status":"403 forbidden",
@@ -110,7 +113,7 @@ module.exports = function(app, db,crypto) {
         });
       }
       res.send({
-        "Flag":"test{flag}"
+        "Flag":"scctf{$$PP_1$_c00|_}"
       });
     });
 }

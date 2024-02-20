@@ -10,15 +10,6 @@ require('./config/database');
 const port = 50000;
 app.use(express.json());
 app.use(cookieParser());
-// app.use(session({
-//       secret: "secret",
-//       cookie: {
-//             magAge: 1000*60*720
-//       },
-//       saveUninitialized: false,
-//       resave: false,
-//       unset: 'destroy'
-// }))
 app.use(cors({
       origin: ['http://localhost:5173','https://localhost:5173'],
       credentials: true,
@@ -33,19 +24,3 @@ require('./app/routes')(app,db,crypto);
 app.listen(port, () => {
       console.log(`Listening on ${port} port ...`);
 });
-
-
-
-// require('./app/routes')(app, {});
-
-// MongoClient.connect(db.url, (err, database) => {
-//     if (err) return console.log(err)
-//     require('./app/routes')(app, database);
-//     app.listen(port, () => {
-//       console.log(`Listening on ${port} port ...`);
-//     });               
-//   })
-  
-// app.listen(port, () => {
-//   console.log("start")
-// });
