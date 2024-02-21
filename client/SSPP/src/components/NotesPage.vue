@@ -50,23 +50,22 @@ export default {
     },
     methods: {
         async getCookies() {
-            try {
                 if (document.cookie.indexOf("session") != 0) {
-                    const data = await axios.get("http://127.0.0.1:50000/api/session").then((response) => {return(response.data);});
-                    let options = {
-                    maxAge: 1000*60*720,
-                    };
-
-                    document.cookie = `session=${data.session}; Max-Age=${options.maxAge};`;
+                    try {
+                        const data = await axios.get(apiUrl+"api/session")
+                        let options = {
+                            maxAge: 1000*60*720,
+                        };
+                        document.cookie = `session=${data.data.session}; Max-Age=${options.maxAge};`;
+                    }catch(e) {
+                        console.log(e)
+                        this.error = "Backend не отвечает"
+                    }
                 }
-            }catch(e) {
-                console.log(e)
-                this.error = "Backend не отвечает"
-            }
         },
         async getNotes() {
         try {
-            const { data } = await axios.get("http://127.0.0.1:50000/api/notes", {
+            const { data } = await axios.get(apiUrl+"/api/notes", {
                 headers: {
                     'Authorization': document.cookie.split("session")[1].slice(1)
                 }
@@ -82,7 +81,6 @@ export default {
                     this.notes.push(tempNote)
                 });
             }
-            //this.notes = data.notes;
         } catch(e) {
             console.log(e)
             this.error = "Backend не отвечает"
@@ -94,14 +92,13 @@ export default {
                 this.count+=1;
             }
         },
-        // newNotes() {
-        //     this.getNotes();
-        // }
-        
+        async start() {
+            await this.getCookies();
+            this.getNotes();
+        },
     },
     beforeMount() {
-        this.getCookies();
-        this.getNotes();
+        this.start()
     }
 
     

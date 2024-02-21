@@ -4,6 +4,8 @@ services:
     build:
       context: ./client/SSPP
       dockerfile: Dockerfile
+    environment: 
+        VUE_APP_SERVER_URL: http://127.0.0.1:50000
     ports:
       - "12348:8080"
   

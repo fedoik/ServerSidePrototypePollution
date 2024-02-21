@@ -10,11 +10,12 @@ require('./config/database');
 const port = 50000;
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-      origin: ['http://localhost:5173','https://localhost:5173'],
-      credentials: true,
-      exposedHeaders: ['set-cookie']
-}));
+// app.use(cors({
+//       origin: ['*'],
+//       credentials: true,
+//       exposedHeaders: ['set-cookie']
+// }));
+app.use(cors())
 
 const db = require('better-sqlite3')('db.sqlite3');
 

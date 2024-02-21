@@ -104,7 +104,7 @@ export default {
     },
     methods: {
         createNote() {
-            axios.post('http://127.0.0.1:50000/api/note/create',{
+            axios.post(apiUrl+"/api/note/create",{
                 "title": this.title,
                 "body": this.body
             },{
@@ -134,7 +134,7 @@ export default {
             this.visible = false;
         },
         updateNotesList(uuid) {
-            axios.get(`http://127.0.0.1:50000/api/note/${uuid}`,{
+            axios.get(apiUrl+`/api/note/${uuid}`,{
                     headers: {
                         'Authorization': document.cookie.split("session")[1].slice(1)
                     }
