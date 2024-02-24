@@ -52,7 +52,7 @@ export default {
         async getCookies() {
                 if (document.cookie.indexOf("session") != 0) {
                     try {
-                        const data = await axios.get(apiUrl+"api/session")
+                        const data = await axios.get(VITE_BACKEND_URL[0]+"/api/session")
                         let options = {
                             maxAge: 1000*60*720,
                         };
@@ -65,7 +65,7 @@ export default {
         },
         async getNotes() {
         try {
-            const { data } = await axios.get(apiUrl+"/api/notes", {
+            const { data } = await axios.get(VITE_BACKEND_URL[0]+"/api/notes", {
                 headers: {
                     'Authorization': document.cookie.split("session")[1].slice(1)
                 }
@@ -93,6 +93,7 @@ export default {
             }
         },
         async start() {
+            console.log("START FUNCTION ")
             await this.getCookies();
             this.getNotes();
         },

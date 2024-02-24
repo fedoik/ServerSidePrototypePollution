@@ -8,6 +8,9 @@ export default defineConfig({
   plugins: [
     vue(),
   ],
+  define: {
+    VITE_BACKEND_URL: [process.env.VITE_BACKEND_URL],
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

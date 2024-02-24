@@ -104,7 +104,7 @@ export default {
     },
     methods: {
         createNote() {
-            axios.post(apiUrl+"/api/note/create",{
+            axios.post(VITE_BACKEND_URL[0]+"/api/note/create",{
                 "title": this.title,
                 "body": this.body
             },{
@@ -134,7 +134,7 @@ export default {
             this.visible = false;
         },
         updateNotesList(uuid) {
-            axios.get(apiUrl+`/api/note/${uuid}`,{
+            axios.get(VITE_BACKEND_URL[0]+`/api/note/${uuid}`,{
                     headers: {
                         'Authorization': document.cookie.split("session")[1].slice(1)
                     }

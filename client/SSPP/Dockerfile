@@ -1,5 +1,8 @@
 FROM node:lts-alpine
 
+ARG VITE_BACKEND_URL
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+
 # устанавливаем простой HTTP-сервер для статики
 RUN npm install -g http-server
 

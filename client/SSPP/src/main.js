@@ -8,6 +8,6 @@ import ToastService from 'primevue/toastservice';
 import router from './router';
 import axios from "axios";
 import VueAxios from 'vue-axios'
-const apiUrl = process.env.VUE_APP_SERVER_URL;
+
 
 createApp(App).use(router).use(VueAxios, axios).use(ToastService).use(PrimeVue).mount('#app')
