@@ -1,0 +1,21 @@
+version: '3'
+services:
+  sspp-client:
+    restart: always
+    build:
+      context: ./client/SSPP
+      args:
+        - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+      dockerfile: Dockerfile
+    # environment: 
+    #     VUE_APP_SERVER_URL: http://127.0.0.1:50000
+    ports:
+      - "12348:8080"
+  
+  sspp-server:
+    restart: always
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+    - "50000:50000"
